@@ -1,0 +1,12 @@
+{
+  "name": "tiresias",
+  "version": "0.0.0",
+  "description": "Service for aggregating search results for autocomplete queries",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodejs index.js"
+  },
+  "author": "",
+  "license": "BSD-2-Clause"
+}
