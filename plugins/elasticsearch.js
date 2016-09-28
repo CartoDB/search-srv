@@ -5,10 +5,10 @@ const Plugin = require('./plugin');
 
 
 class Elasticsearch extends Plugin {
-    constructor() {
-        super(arguments);
-        this.host = arguments[0];
-        this.port = arguments[1];
+    constructor(name, host, port) {
+        super(name);
+        this.host = host;
+        this.port = port;
     }
 
     query(text, callback) {
