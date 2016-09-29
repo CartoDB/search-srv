@@ -13,7 +13,6 @@ class AutoComplete {
     }
 
     process_request() {
-        this.store_plugins();
         var self = this;
         requests.get_request_body(this.request).then(function(body) {
             self.distribute_request(body);
@@ -22,28 +21,53 @@ class AutoComplete {
         });
     }
 
-    store_plugins() {
-        this.plugins = config.get_plugins();
+    store_plugins(names) {
+        this.plugins = [];
+        var all_plugins = config.get_plugins();
+        if (typeof names === 'undefined') {
+            for (var key in all_plugins) {
+                if (all_plugins.hasOwnProperty(key)) {
+                    this.plugins.push(all_plugins[key]);
+                }
+            }
+        }
+        else {
+            for (var idx in names) {
+                if (all_plugins.hasOwnProperty(names[idx])) {
+                    this.plugins.push(all_plugins[names[idx]]);
+                }
+                else {
+                    console.warn('No plugin found with name %s', names[idx]);
+                }
+            }
+        }
     }
 
     distribute_request(body) {
-        var promises = [];
-        var text = JSON.parse(body)['text'];
-        var timeout = config.get_timeout();
-        var self = this;
-        for (var idx in this.plugins) {
-            promises.push(new Promise(function(resolve, reject) {
-                self.plugins[idx].query(text, resolve);
-                setTimeout(resolve, timeout, []);
-            }));
-        }
+        try {
+            var promises = [];
+            var request_json = JSON.parse(body);
+            this.store_plugins(request_json['services']);
+            var text = request_json['text'];
+            var timeout = config.get_timeout();
+            var self = this;
+            for (var idx in this.plugins) {
+                promises.push(new Promise(function(resolve, reject) {
+                    self.plugins[idx].query(text, resolve);
+                    setTimeout(resolve, timeout, []);
+                }));
+            }
 
-        var self = this;
-        Promise.all(promises).then(function(values) {
-            self.write_response_options(values);
-        }).catch(function(err) {
-            self.error(err);
-        });
+            var self = this;
+            Promise.all(promises).then(function(values) {
+                self.write_response_options(values);
+            }).catch(function(err) {
+                self.error(err);
+            });
+        }
+        catch(err) {
+            this.error(err);
+        }
     }
 
     write_response_options(values) {
@@ -56,7 +80,7 @@ class AutoComplete {
 
     error(err) {
         console.error(err);
-        this.response.end('[]');
+        this.response.end('{}');
     }
 }
 

@@ -6,8 +6,8 @@ const CONFIG_FILE = './settings.cfg';
 
 class Config {
     constructor() {
-        this.plugins = [];
-        this.plugins_rollback = [];
+        this.plugins = {};
+        this.plugins_rollback = {};
         this.timeout = 0;
         this.read();
     }
@@ -15,12 +15,12 @@ class Config {
     read() {
         try {
             this.plugins_rollback = this.current_config;
-            this.plugins = [];
+            this.plugins = {};
             let contents = fs.readFileSync(CONFIG_FILE);
             let config = JSON.parse(contents);
             for (var idx in config['plugins']) {
                 let cls = require('../plugins/' + config['plugins'][idx]['type']);
-                this.plugins.push(new (
+                this.plugins[config['plugins'][idx]['arguments'][0]] = (new (
                     Function.prototype.bind.apply(cls, [null].concat(config['plugins'][idx]['arguments']))
                 ));
             }
@@ -28,7 +28,7 @@ class Config {
         }
         catch(err) {
             this.plugins = this.plugins_rollback;
-            this.plugins_rollback = [];
+            this.plugins_rollback = {};
             this.error(err);
         }
     }
