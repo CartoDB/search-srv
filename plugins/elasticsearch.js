@@ -2,6 +2,7 @@
 
 const http = require('http');
 const Plugin = require('./plugin');
+const requests = require('../utils/requests');
 
 
 class Elasticsearch extends Plugin {
@@ -40,23 +41,14 @@ class Elasticsearch extends Plugin {
     }
 
     query_callback(response, callback) {
-        var body = []
-        response.on('data', function(chunk) {
-            body.push(chunk);
-        }).on('end', function() {
-            let payloads = []
-            try {
-                body = Buffer.concat(body).toString();
-                let suggestions = JSON.parse(body)['autocomplete-suggest'][0]['options'];
-                payloads = suggestions.map(function(suggestion) {
-                    return suggestion['payload']
-                });
-            }
-            catch(err) {
-                console.error(err);
-            }
-            callback(payloads)
-        }).on('error', function() {
+        requests.get_request_body(response).then(function(body) {
+            let suggestions = JSON.parse(body)['autocomplete-suggest'][0]['options'];
+            let payloads = suggestions.map(function(suggestion) {
+                return suggestion['payload'];
+            });
+            callback(payloads);
+        }).catch(function(err) {
+            console.error(err);
             callback([]);
         });
     }
