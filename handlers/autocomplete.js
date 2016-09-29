@@ -1,7 +1,6 @@
 "use strict";
 
 const requests = require('../utils/requests');
-const REQUEST_TIMEOUT_MS = 10
 
 var config = require('../utils/config');
 
@@ -28,13 +27,14 @@ class AutoComplete {
     }
 
     distribute_request(body) {
-        let promises = [];
-        let text = JSON.parse(body)['text'];
+        var promises = [];
+        var text = JSON.parse(body)['text'];
+        var timeout = config.get_timeout();
         var self = this;
         for (var idx in this.plugins) {
             promises.push(new Promise(function(resolve, reject) {
                 self.plugins[idx].query(text, resolve);
-                setTimeout(resolve, REQUEST_TIMEOUT_MS, []);
+                setTimeout(resolve, timeout, []);
             }));
         }
 
@@ -47,7 +47,7 @@ class AutoComplete {
     }
 
     write_response_options(values) {
-        let obj = {};
+        var obj = {};
         for(var idx in this.plugins) {
             obj[this.plugins[idx].name] = values[idx];
         }
@@ -61,7 +61,7 @@ class AutoComplete {
 }
 
 var autocompleteHandler = function(request, response) {
-    let ac = new AutoComplete(request, response);
+    var ac = new AutoComplete(request, response);
     ac.process_request();
 };
 

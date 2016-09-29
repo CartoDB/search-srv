@@ -8,6 +8,7 @@ class Config {
     constructor() {
         this.plugins = [];
         this.plugins_rollback = [];
+        this.timeout = 0;
         this.read();
     }
 
@@ -23,6 +24,7 @@ class Config {
                     Function.prototype.bind.apply(cls, [null].concat(config['plugins'][idx]['arguments']))
                 ));
             }
+            this.timeout = config['timeout'];
         }
         catch(err) {
             this.plugins = this.plugins_rollback;
@@ -37,6 +39,10 @@ class Config {
 
     get_plugins() {
         return this.plugins;
+    }
+
+    get_timeout() {
+        return this.timeout;
     }
 
     error(err) {
