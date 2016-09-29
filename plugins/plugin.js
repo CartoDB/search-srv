@@ -6,6 +6,7 @@
  * implement:
  * query(text, callback)
     - query for text and call callback with a list of results
+    - the request should be async
  */
 class Plugin {
     constructor(name) {

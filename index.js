@@ -1,5 +1,6 @@
 "use strict";
 
+const config = require('./utils/config');
 const http = require('http');
 const requestRouter = require('./handlers/route');
 const port = 8080;

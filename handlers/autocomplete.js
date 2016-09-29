@@ -1,19 +1,20 @@
 "use strict";
 
 const requests = require('../utils/requests');
-var elasticsearch = require('../plugins/elasticsearch');
-
 const REQUEST_TIMEOUT_MS = 10
-const plugins = [new elasticsearch('clayton-elasticsearch', '100.70.21.91', '8080')]
+
+var config = require('../utils/config');
 
 
 class AutoComplete {
     constructor(request, response) {
         this.request = request;
         this.response = response;
+        this.plugins = [];
     }
 
     process_request() {
+        this.store_plugins();
         var self = this;
         requests.get_request_body(this.request).then(function(body) {
             self.distribute_request(body);
@@ -22,12 +23,17 @@ class AutoComplete {
         });
     }
 
+    store_plugins() {
+        this.plugins = config.get_plugins();
+    }
+
     distribute_request(body) {
         let promises = [];
         let text = JSON.parse(body)['text'];
-        for (var idx in plugins) {
+        var self = this;
+        for (var idx in this.plugins) {
             promises.push(new Promise(function(resolve, reject) {
-                plugins[idx].query(text, resolve);
+                self.plugins[idx].query(text, resolve);
                 setTimeout(resolve, REQUEST_TIMEOUT_MS, []);
             }));
         }
@@ -42,8 +48,8 @@ class AutoComplete {
 
     write_response_options(values) {
         let obj = {};
-        for(var idx in plugins) {
-            obj[plugins[idx].name] = values[idx];
+        for(var idx in this.plugins) {
+            obj[this.plugins[idx].name] = values[idx];
         }
         this.response.end(JSON.stringify(obj));
     }

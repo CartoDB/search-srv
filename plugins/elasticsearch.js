@@ -36,6 +36,11 @@ class Elasticsearch extends Plugin {
             this.query_callback(response, callback);
         }.bind(this));
 
+        req.on('error', function(err) {
+            console.error(err);
+            callback([]);
+        });
+
         req.write(post_data);
         req.end();
     }
