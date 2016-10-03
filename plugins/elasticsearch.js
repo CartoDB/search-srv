@@ -46,10 +46,17 @@ class Elasticsearch extends Plugin {
     }
 
     query_callback(response, callback) {
+        if (response.statusCode != 200) {
+            console.warn('Received status %s from %s:%s', response.statusCode, this.host, this.port);
+            callback([]);
+            return;
+        }
         requests.get_request_body(response).then(function(body) {
             let suggestions = JSON.parse(body)['autocomplete-suggest'][0]['options'];
             let payloads = suggestions.map(function(suggestion) {
-                return suggestion['payload'];
+                var pl = suggestion['payload'];
+                pl.score = suggestion['score'];
+                return pl;
             });
             callback(payloads);
         }).catch(function(err) {
