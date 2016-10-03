@@ -14,26 +14,26 @@ class Postgres extends Plugin {
             password: password,
             database: database
         };
-        this.client = new pg.Client(this.config);
     }
 
     query(text, callback) {
+        var client = new pg.Client(this.config);
         var self = this;
         try {
-            this.client.connect(function(err) {
+            client.connect(function(err) {
                 if (err) {
                     console.error(err);
                     callback([]);
                     return;
                 }
                 var query = 'SELECT name, type, privacy FROM visualizations WHERE privacy=\'public\' AND type=\'table\' AND user_id=(SELECT id FROM users WHERE username=\'15775613\')';
-                self.client.query(query, function(err, result) {
+                client.query(query, function(err, result) {
                     if (err) {
                         console.error(err);
                         return;
                     }
                     try {
-                        self.client.end(console.error);
+                        client.end(console.error);
                         console.log(result.rows);  // XXX
                         var payloads = result.rows.map(self.format_suggestion);
                         callback(payloads);
