@@ -46,6 +46,9 @@ class Config {
     }
 
     error(err) {
+        if (err.name === 'SyntaxError') {
+            console.error(err.stack);
+        }
         console.error(err);
     }
 }
