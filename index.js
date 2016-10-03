@@ -3,7 +3,7 @@
 const config = require('./utils/config');
 const http = require('http');
 const requestRouter = require('./handlers/route');
-const port = 8080;
+const port = 8008;
 
 
 var server = http.createServer(requestRouter);

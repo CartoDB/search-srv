@@ -11,13 +11,10 @@ class Postgres extends Plugin {
             host: host,
             port: port,
             user: user,
-            password: null,
+            password: password,
             database: database
         };
-        console.log(this.config);
-        //this.client = new pg.Client(this.config);
-        pg.defaults.password = null;
-        this.client = new pg.Client('postgres://' + user + '@' + host + ':' + port + '/' + database)
+        this.client = new pg.Client(this.config);
     }
 
     query(text, callback) {
@@ -33,13 +30,12 @@ class Postgres extends Plugin {
                 self.client.query(query, function(err, result) {
                     if (err) {
                         console.error(err);
-                        return
+                        return;
                     }
                     try {
                         self.client.end(console.error);
                         console.log(result.rows);  // XXX
-                        var suggestions = JSON.parse(result.rows);
-                        var payloads = suggestions.map(this.format_suggestion);
+                        var payloads = result.rows.map(self.format_suggestion);
                         callback(payloads);
                     }
                     catch(err) {
