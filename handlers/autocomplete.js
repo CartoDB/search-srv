@@ -49,11 +49,12 @@ class AutoComplete {
             var request_json = JSON.parse(body);
             this.store_plugins(request_json['services']);
             var text = request_json['text'];
+            var additional_params = request_json['params'] || {};
             var timeout = config.get_timeout();
             var self = this;
             for (var idx in this.plugins) {
                 promises.push(new Promise(function(resolve, reject) {
-                    self.plugins[idx].query(text, resolve);
+                    self.plugins[idx].query(text, resolve, additional_params[self.plugins[idx].name]);
                     setTimeout(resolve, timeout, []);
                 }));
             }

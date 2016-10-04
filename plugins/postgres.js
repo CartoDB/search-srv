@@ -40,7 +40,6 @@ FROM (
         )
 ) AS results
 ORDER BY rank DESC, type DESC LIMIT 50`;
-console.log(search_query);
 
 
 class Postgres extends Plugin {
@@ -53,14 +52,27 @@ class Postgres extends Plugin {
             password: password,
             database: database
         };
+        this.user_regex = new RegExp("^[0-9a-zA-Z]+$");
     }
 
-    query(text, callback, username) {
-		if(typeof username === 'undefined') {
-			console.warning('No username passed to postgres query');
-			callback([]);
-			return;
-		}
+    validate_username(additional_params) {
+        try {
+            if (this.user_regex.exec(additional_params.username)) {
+                return additional_params.username;
+            }
+        }
+        catch(err) {}
+        return null;
+    }
+
+    query(text, callback, additional_params) {
+        var username = this.validate_username(additional_params);
+        if (typeof username != 'string') {
+            console.warn('No valid username passed to postgres query');
+            callback([]);
+            return;
+        }
+
         var client = new pg.Client(this.config);
         var self = this;
 
