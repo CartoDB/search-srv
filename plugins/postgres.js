@@ -86,7 +86,7 @@ class Postgres extends Plugin {
 
                 // Prepare query arguments
                 text = text.toLowerCase();
-                var prefix_text = text.replace(' ', '+') + ':*';
+                var prefix_text = text.replace(new RegExp(' ', 'g'), '+') + ':*';
                 var like_text = '%' + text + '%';
                 var query_config = {
                     text: search_query,
@@ -120,6 +120,7 @@ class Postgres extends Plugin {
         pl.score = suggestion['rank'];
         pl.id = suggestion['id'];
         pl.dataset = suggestion['name'];
+        pl.type = suggestion['type'];
         pl.location = 'cartodb';
         pl.is_dataset = true;
         pl.data = {

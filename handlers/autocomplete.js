@@ -13,6 +13,7 @@ class AutoComplete {
     }
 
     process_request() {
+        this.response.setHeader('Access-Control-Allow-Origin', '*');
         var self = this;
         requests.get_request_body(this.request).then(function(body) {
             self.distribute_request(body);
