@@ -120,7 +120,6 @@ class Postgres extends Plugin {
         pl.score = suggestion['rank'];
         pl.id = suggestion['id'];
         pl.dataset = suggestion['name'];
-        pl.type = suggestion['type'];
         pl.location = 'cartodb';
         pl.is_dataset = true;
         pl.data = {

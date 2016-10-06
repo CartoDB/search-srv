@@ -68,7 +68,6 @@ class Elasticsearch extends Plugin {
             let payloads = suggestions.map(function(suggestion) {
                 var pl = suggestion['payload'];
                 pl.score = suggestion['score'];
-                pl.type = 'remote';
                 return pl;
             });
             callback(payloads);
