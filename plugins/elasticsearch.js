@@ -20,6 +20,7 @@ class Elasticsearch extends Plugin {
                 'text': text,
                 'completion': {
                     'field': 'suggest',
+                    'size': 10,
                     'fuzzy': false
                 }
             }
