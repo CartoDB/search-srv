@@ -16,12 +16,10 @@ class Elasticsearch extends Plugin {
 
     query(text, callback) {
         var post_data = JSON.stringify({
-            'autocomplete-suggest': {
-                'text': text,
-                'completion': {
-                    'field': 'suggest',
-                    'size': 10,
-                    'fuzzy': false
+            'query': {
+                'multi_match': {
+                    'query': text,
+                    'fields': ['meta.name', 'meta.category', 'meta.locations', 'meta.tags']
                 }
             }
         });
@@ -37,12 +35,12 @@ class Elasticsearch extends Plugin {
         if (this.proxy_host && this.proxy_port) {
             req_meta.hostname = this.proxy_host;
             req_meta.port = this.proxy_port;
-            req_meta.path = 'http://' + this.host + ':' + this.port + '/_suggest';
+            req_meta.path = 'http://' + this.host + ':' + this.port + '/test/resource/_search';
         }
         else {
             req_meta.hostname = this.host;
             req_meta.port = this.port;
-            req_meta.path = '/_suggest';
+            req_meta.path = '/test/resource/_search';
         }
 
         var req = http.request(req_meta, function(response) {
@@ -65,10 +63,16 @@ class Elasticsearch extends Plugin {
             return;
         }
         requests.get_request_body(response).then(function(body) {
-            let suggestions = JSON.parse(body)['autocomplete-suggest'][0]['options'];
+            let suggestions = JSON.parse(body)['hits']['hits'];
             let payloads = suggestions.map(function(suggestion) {
-                var pl = suggestion['payload'];
-                pl.score = suggestion['score'];
+                var pl = {};
+                pl.data = suggestion._source.data;
+                pl.origin = suggestion._source.origin;
+                pl.primary_key = suggestion._source.primary_key;
+                pl.location = suggestion._source.location;
+                pl.id = suggestion._source.id;
+                pl.dataset = suggestion._source.dataset;
+                pl.score = suggestion._score;
                 return pl;
             });
             callback(payloads);
