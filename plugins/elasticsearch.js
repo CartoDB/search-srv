@@ -19,6 +19,7 @@ class Elasticsearch extends Plugin {
             'query': {
                 'multi_match': {
                     'query': text,
+                    'type': 'phrase_prefix',
                     'fields': ['meta.name', 'meta.category', 'meta.locations', 'meta.tags']
                 }
             }
