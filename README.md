@@ -85,4 +85,21 @@ Each object requires two attributes:
 1. `type` - the type of plugin, this corresponds to the name of the plugin file found in `plugins/`
 2. `arguments` - the arguments given to the plugin constructor; the first will be a name which must be unique across the configured plugins; the rest will be specific to the plugin so look at the plugin constructor
 
+Take a look at the following example `settings.cfg`:
+```
+{
+    "timeout": 50,
+    "plugins": [
+        {
+            "type": "elasticsearch",
+            "arguments": ["maps-elasticsearch", "host", "port"]
+        },
+        {
+            "type": "postgres",
+            "arguments": ["maps-postgres", "host", "port", "username", "password", "database-name"]
+        }
+    ]
+}
+```
+
 To refresh Tiresias' configuration while the server is running, send a request to `/refresh`.
