@@ -72,6 +72,8 @@ Each result is an object with the following format:
 ```
 The data attribute is an object containing a set of `<key, value>` pairs with at least one value that matches the search query.
 
+If the result is actually a dataset and not an entity from a dataset, then there will be an additional attribute: `is_dataset: true`.
+
 
 ### Configuration
 Tiresias can be configured by editing the `settings.cfg` file.

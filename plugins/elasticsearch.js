@@ -68,9 +68,6 @@ class Elasticsearch extends Plugin {
             let payloads = suggestions.map(function(suggestion) {
                 var pl = {};
                 pl.data = suggestion._source.data;
-                pl.origin = suggestion._source.origin;
-                pl.primary_key = suggestion._source.primary_key;
-                pl.location = suggestion._source.location;
                 pl.id = suggestion._source.id;
                 pl.dataset = suggestion._source.dataset;
                 pl.score = suggestion._score;
