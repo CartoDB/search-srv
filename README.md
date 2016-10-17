@@ -31,7 +31,7 @@ If you want to only search across specific services by name, e.g. "service-1" an
 ```
 
 Certain plugins may require parameters to be passed along in the request. For example, the `Postgres` plugin requires a username.
-In order to send parameters to a service, we need to know what the service has been name in Tiresias' configuration.
+In order to send parameters to a service, we need to know what the service has been named in Tiresias' configuration.
 Assuming there is a `Postgres` service named "pg-prod" and we want to provide the username argument "john", we could do the following:
 ```
 {
@@ -70,7 +70,7 @@ Each result is an object with the following format:
     }
 }
 ```
-The data attribute is an object containing a set of key, value pairs with at least one that matches the search query.
+The data attribute is an object containing a set of `<key, value>` pairs with at least one value that matches the search query.
 
 
 ### Configuration
@@ -81,7 +81,7 @@ Here you can modify the global search timeout (in milliseconds) and configure pl
 To add new plugins, simply add another object to the `plugins` list.
 
 Each object requires two attributes:
-1. `type` - the type of plugin, this corresponds to the name of the plugin file found in `plugins/`
-2. `arguments` - the arguments given to the plugin constructor, the first will be a name which must be unique across the configured plugins
+    1. `type` - the type of plugin, this corresponds to the name of the plugin file found in `plugins/`
+    2. `arguments` - the arguments given to the plugin constructor; the first will be a name which must be unique across the configured plugins; the rest will be specific to the plugin so look at the plugin constructor
 
 To refresh Tiresias' configuration while the server is running, send a request to `/refresh`.
