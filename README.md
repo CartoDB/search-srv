@@ -81,6 +81,7 @@ Here you can modify the global search timeout (in milliseconds) and configure pl
 To add new plugins, simply add another object to the `plugins` list.
 
 Each object requires two attributes:
+
     1. `type` - the type of plugin, this corresponds to the name of the plugin file found in `plugins/`
     2. `arguments` - the arguments given to the plugin constructor; the first will be a name which must be unique across the configured plugins; the rest will be specific to the plugin so look at the plugin constructor
 
