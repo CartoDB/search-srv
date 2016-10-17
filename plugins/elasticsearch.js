@@ -35,12 +35,12 @@ class Elasticsearch extends Plugin {
         if (this.proxy_host && this.proxy_port) {
             req_meta.hostname = this.proxy_host;
             req_meta.port = this.proxy_port;
-            req_meta.path = 'http://' + this.host + ':' + this.port + '/test/resource/_search';
+            req_meta.path = 'http://' + this.host + ':' + this.port + '/demo/resource/_search';
         }
         else {
             req_meta.hostname = this.host;
             req_meta.port = this.port;
-            req_meta.path = '/test/resource/_search';
+            req_meta.path = '/demo/resource/_search';
         }
 
         var req = http.request(req_meta, function(response) {
