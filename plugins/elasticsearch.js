@@ -70,6 +70,7 @@ class Elasticsearch extends Plugin {
                 pl.data = suggestion._source.data;
                 pl.id = suggestion._source.id;
                 pl.dataset = suggestion._source.dataset;
+                pl.is_dataset = false;
                 pl.score = suggestion._score;
                 return pl;
             });

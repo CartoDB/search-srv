@@ -65,14 +65,13 @@ Each result is an object with the following format:
     "id": "<some unique identifier for the dataset that this entry came from>",
     "dataset": "<the name of the dataset, e.g. factories>",
     "score": <some numerical value related to the relevance of the search result>,
+    "is_dataset": <boolean denoting whether the result is an entity from a set or a set itself>
     "data": {
         "<column name>": "<value>"
     }
 }
 ```
 The data attribute is an object containing a set of `<key, value>` pairs with at least one value that matches the search query.
-
-If the result is actually a dataset and not an entity from a dataset, then there will be an additional attribute: `is_dataset: true`.
 
 
 ### Configuration
