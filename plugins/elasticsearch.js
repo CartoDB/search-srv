@@ -3,6 +3,8 @@
 const http = require('http');
 const Plugin = require('./plugin');
 const requests = require('../utils/requests');
+const log = require('../utils/logging');
+const log_prefix = 'Elasticsearch Plugin:';
 
 
 class Elasticsearch extends Plugin {
@@ -49,7 +51,7 @@ class Elasticsearch extends Plugin {
         }.bind(this));
 
         req.on('error', function(err) {
-            console.error(err);
+            log.error(log_prefix + err);
             callback([]);
         });
 
@@ -59,7 +61,7 @@ class Elasticsearch extends Plugin {
 
     query_callback(response, callback) {
         if (response.statusCode != 200) {
-            console.warn('Received status %s from %s:%s', response.statusCode, this.host, this.port);
+            log.warn('Received status ' + response.statusCode + ' from ' + this.host + ':' + this.port);
             callback([]);
             return;
         }
@@ -76,7 +78,7 @@ class Elasticsearch extends Plugin {
             });
             callback(payloads);
         }).catch(function(err) {
-            console.error(err);
+            log.error(log_prefix + err);
             callback([]);
         });
     }

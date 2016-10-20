@@ -2,6 +2,8 @@
 
 const pg = require('pg');
 const Plugin = require('./plugin');
+const log = require('../utils/logging');
+const log_prefix = 'Postgres Plugin:';
 
 const search_query = `\
 SELECT
@@ -68,7 +70,7 @@ class Postgres extends Plugin {
     query(text, callback, additional_params) {
         var username = this.validate_username(additional_params);
         if (typeof username != 'string') {
-            console.warn('No valid username passed to postgres query');
+            log.warn(log_prefix + 'No valid username passed to postgres query');
             callback([]);
             return;
         }
@@ -79,7 +81,7 @@ class Postgres extends Plugin {
         try {
             client.connect(function(err) {
                 if (err) {
-                    console.error(err);
+                    log.error(log_prefix + err);
                     callback([]);
                     return;
                 }
@@ -95,7 +97,8 @@ class Postgres extends Plugin {
 
                 client.query(query_config, function(err, result) {
                     if (err) {
-                        console.error(err);
+                        log.error(log_prefix + err);
+                        callback([]);
                         return;
                     }
                     try {
@@ -103,14 +106,14 @@ class Postgres extends Plugin {
                         callback(result.rows.map(self.format_suggestion));
                     }
                     catch(err) {
-                        console.error(err);
+                        log.error(log_prefix + err);
                         callback([]);
                     }
                 });
             });
         }
         catch(err) {
-            console.error(err);
+            log.error(log_prefix + err);
             callback([]);
         }
     }

@@ -1,6 +1,8 @@
 "use strict";
 
 const fs = require('fs');
+const log = require('./logging.js');
+const log_prefix = 'Config Util:'
 const CONFIG_FILE = './settings.cfg';
 
 
@@ -46,10 +48,7 @@ class Config {
     }
 
     error(err) {
-        if (err.name === 'SyntaxError') {
-            console.error(err.stack);
-        }
-        console.error(err);
+        console.error(log_prefix + err);
     }
 }
 

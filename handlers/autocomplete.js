@@ -1,6 +1,8 @@
 "use strict";
 
 const requests = require('../utils/requests');
+const log = require('../utils/logging');
+const log_prefix = 'Autocomplete Handler:';
 
 var config = require('../utils/config');
 
@@ -38,7 +40,7 @@ class AutoComplete {
                     this.plugins.push(all_plugins[names[idx]]);
                 }
                 else {
-                    console.warn('No plugin found with name %s', names[idx]);
+                    log.warn(log_prefix + 'No plugin found with name ' + names[idx]);
                 }
             }
         }
@@ -81,7 +83,7 @@ class AutoComplete {
     }
 
     error(err) {
-        console.error(err);
+        log.error(log_prefix + err);
         this.response.end('{}');
     }
 }
