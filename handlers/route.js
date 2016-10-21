@@ -1,0 +1,28 @@
+"use strict";
+
+const url = require('url');
+const autocompleteHandler = require('./autocomplete');
+const refreshHandler = require('./refresh');
+const log = require('../utils/logging');
+
+
+var requestRouter = function(request, response) {
+    log.info('Path hit: ' + request.url);
+    let path  = url.parse(request.url).pathname;
+    switch(path) {
+        case '/ac':
+            autocompleteHandler(request, response);
+            break;
+        case '/refresh':
+            refreshHandler(request, response);
+            break;
+        case '/health':
+            response.end('Hello');
+            break;
+        default:
+            response.writeHead(404, 'Invalid path');
+            response.end();
+    }
+};
+
+module.exports = requestRouter;
