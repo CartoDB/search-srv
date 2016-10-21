@@ -9,5 +9,5 @@ const port = 8008;
 
 var server = http.createServer(requestRouter);
 server.listen(port, function() {
-    log.info('Tiresias listening on port ' + port);
+    log.info('Search-srv listening on port ' + port);
 });

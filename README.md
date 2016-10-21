@@ -1,12 +1,12 @@
-# Tiresias
+# Search-srv
 
 ### Overview
 A search aggregation service.
 
 ### Installation
 ```
-git clone https://bbgithub.dev.bloomberg.com/cpassmore3/Tiresias.git
-cd Tiresias
+git clone https://bbgithub.dev.bloomberg.com/datavis-cartodb/search-srv.git
+cd search-srv
 npm install
 npm start
 ```
@@ -31,7 +31,7 @@ If you want to only search across specific services by name, e.g. "service-1" an
 ```
 
 Certain plugins may require parameters to be passed along in the request. For example, the `Postgres` plugin requires a username.
-In order to send parameters to a service, we need to know what the service has been named in Tiresias' configuration.
+In order to send parameters to a service, we need to know what the service has been named in Search-srv's configuration.
 Assuming there is a `Postgres` service named "pg-prod" and we want to provide the username argument "john", we could do the following:
 ```
 {
@@ -45,7 +45,7 @@ Assuming there is a `Postgres` service named "pg-prod" and we want to provide th
 ```
 
 ### Output
-Tiresias will return a JSON object of results with the following format:
+Search-srv will return a JSON object of results with the following format:
 ```
 {
     "service-1": [
@@ -75,7 +75,7 @@ The data attribute is an object containing a set of `<key, value>` pairs with at
 
 
 ### Configuration
-Tiresias can be configured by editing the `settings.cfg` file.
+Search-srv can be configured by editing the `settings.cfg` file.
 
 Here you can modify the global search timeout (in milliseconds) and configure plugins.
 
@@ -103,4 +103,4 @@ Take a look at the following example `settings.cfg`:
 }
 ```
 
-To refresh Tiresias' configuration while the server is running, send a request to `/refresh`.
+To refresh Search-srv's configuration while the server is running, send a request to `/refresh`.

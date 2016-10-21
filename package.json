@@ -1,5 +1,5 @@
 {
-  "name": "tiresias",
+  "name": "search-srv",
   "version": "0.0.0",
   "description": "Service for aggregating search results for autocomplete queries",
   "main": "index.js",
