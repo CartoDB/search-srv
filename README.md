@@ -13,7 +13,7 @@ npm start
 
 ### Usage
 
-To get autocomplete results, send a POST request to `/ac`.
+To get autocomplete results, send a POST request to `/search-srv-ac`.
 
 For example, get results for "hello" by sending the following payload:
 ```
@@ -103,8 +103,8 @@ Take a look at the following example `settings.cfg`:
 }
 ```
 
-To refresh Search-srv's configuration while the server is running, send a request to `/refresh`.
+To refresh Search-srv's configuration while the server is running, send a request to `/search-srv-refresh`.
 
 
 ### Health
-Search-srv has a health check endpoint available. Just send a request to `/health`.
+Search-srv has a health check endpoint available. Just send a request to `/search-srv-health`.

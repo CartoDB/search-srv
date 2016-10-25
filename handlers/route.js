@@ -10,13 +10,13 @@ var requestRouter = function(request, response) {
     log.info('Path hit: ' + request.url);
     let path  = url.parse(request.url).pathname;
     switch(path) {
-        case '/ac':
+        case '/search-srv-ac':
             autocompleteHandler(request, response);
             break;
-        case '/refresh':
+        case '/search-srv-refresh':
             refreshHandler(request, response);
             break;
-        case '/health':
+        case '/search-srv-health':
             response.end('Hello');
             break;
         default:
