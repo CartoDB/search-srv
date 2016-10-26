@@ -1,25 +1,43 @@
 "use strict";
 
+const fs = require('fs');
+
 const INFO = 'INFO';
 const WARN = 'WARN';
 const ERROR = 'ERROR';
 
 
 class logging {
+    constructor() {
+        this.file_descriptor = null;
+    }
+
+    set_log_file(filename) {
+        this.file_descriptor = fs.openSync(filename, 'a');
+    }
+
     _format_msg(level, msg) {
-        return new Date().toISOString() + ':' + level + ':' + msg;
+        return new Date().toISOString() + ':' + level + ':' + msg + '\n';
+    }
+
+    write(level, msg) {
+        fs.appendFile(this.file_descriptor, this._format_msg(level, msg), function() {});
     }
 
     info(msg) {
-        console.log(this._format_msg(INFO, msg));
+        this.write(INFO, msg);
     }
 
     warn(msg) {
-        console.warn(this._format_msg(WARN, msg));
+        this.write(WARN, msg);
     }
 
     error(msg) {
-        console.error(this._format_msg(ERROR, msg));
+        this.write(ERROR, msg);
+    }
+
+    destructor() {
+        fs.closeSync(this.file_descriptor);
     }
 }
 

@@ -8,7 +8,7 @@ A search aggregation service.
 git clone https://bbgithub.dev.bloomberg.com/datavis-cartodb/search-srv.git
 cd search-srv
 npm install
-npm start
+npm start <port> <log_file> <settings.cfg>
 ```
 
 ### Usage
@@ -75,7 +75,7 @@ The data attribute is an object containing a set of `<key, value>` pairs with at
 
 
 ### Configuration
-Search-srv can be configured by editing the `settings.cfg` file.
+Search-srv can be configured by providing a `settings.cfg` file.
 
 Here you can modify the global search timeout (in milliseconds) and configure plugins.
 
