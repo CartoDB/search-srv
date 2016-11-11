@@ -8,12 +8,12 @@ A search aggregation service.
 git clone https://bbgithub.dev.bloomberg.com/datavis-cartodb/search-srv.git
 cd search-srv
 npm install
-npm start
+npm start <port> <log_file> <settings.cfg>
 ```
 
 ### Usage
 
-To get autocomplete results, send a POST request to `/ac`.
+To get autocomplete results, send a POST request to `/search-srv-ac`.
 
 For example, get results for "hello" by sending the following payload:
 ```
@@ -75,7 +75,7 @@ The data attribute is an object containing a set of `<key, value>` pairs with at
 
 
 ### Configuration
-Search-srv can be configured by editing the `settings.cfg` file.
+Search-srv can be configured by providing a `settings.cfg` file.
 
 Here you can modify the global search timeout (in milliseconds) and configure plugins.
 
@@ -103,8 +103,8 @@ Take a look at the following example `settings.cfg`:
 }
 ```
 
-To refresh Search-srv's configuration while the server is running, send a request to `/refresh`.
+To refresh Search-srv's configuration while the server is running, send a request to `/search-srv-refresh`.
 
 
 ### Health
-Search-srv has a health check endpoint available. Just send a request to `/health`.
+Search-srv has a health check endpoint available. Just send a request to `/search-srv-health`.

@@ -3,7 +3,6 @@
 const fs = require('fs');
 const log = require('./logging.js');
 const log_prefix = 'Config Util:'
-const CONFIG_FILE = './settings.cfg';
 
 
 class Config {
@@ -11,14 +10,14 @@ class Config {
         this.plugins = {};
         this.plugins_rollback = {};
         this.timeout = 0;
-        this.read();
+        this.config_file = null;
     }
 
     read() {
         try {
             this.plugins_rollback = this.current_config;
             this.plugins = {};
-            let contents = fs.readFileSync(CONFIG_FILE);
+            let contents = fs.readFileSync(this.config_file);
             let config = JSON.parse(contents);
             for (var idx in config['plugins']) {
                 let cls = require('../plugins/' + config['plugins'][idx]['type']);
@@ -35,6 +34,12 @@ class Config {
         }
     }
 
+    set_config_file(filename) {
+        this.config_file = filename;
+        log.info(log_prefix + 'Config file was set to "' + filename + '"');
+        this.read();
+    }
+
     refresh() {
         this.read();
     }
@@ -48,7 +53,7 @@ class Config {
     }
 
     error(err) {
-        console.error(log_prefix + err);
+        log.error(log_prefix + err);
     }
 }
 
