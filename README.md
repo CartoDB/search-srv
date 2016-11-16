@@ -1,9 +1,10 @@
-# Search-srv
+# search-srv
 
 ### Overview
 A search aggregation service.
 
 ### Installation
+Before executing the commands below, make sure you have node version 6.9.1 (or later) installed.
 ```
 git clone https://bbgithub.dev.bloomberg.com/datavis-cartodb/search-srv.git
 cd search-srv
