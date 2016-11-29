@@ -41,6 +41,7 @@ FROM (
             )
         )
 ) AS results
+WHERE name <> 'shared_empty_dataset'
 ORDER BY rank DESC, type DESC LIMIT 50`;
 
 
