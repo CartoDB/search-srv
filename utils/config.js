@@ -15,7 +15,7 @@ class Config {
 
     read() {
         try {
-            this.plugins_rollback = this.current_config;
+            this.plugins_rollback = this.plugins;
             this.plugins = {};
             let contents = fs.readFileSync(this.config_file);
             let config = JSON.parse(contents);
