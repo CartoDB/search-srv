@@ -82,7 +82,7 @@ class Postgres extends Plugin {
         try {
             client.connect(function(err) {
                 if (err) {
-                    log.error(log_prefix + err);
+                    log.error(err);
                     callback([]);
                     return;
                 }
@@ -98,7 +98,7 @@ class Postgres extends Plugin {
 
                 client.query(query_config, function(err, result) {
                     if (err) {
-                        log.error(log_prefix + err);
+                        log.error(err);
                         callback([]);
                         return;
                     }
@@ -114,7 +114,7 @@ class Postgres extends Plugin {
             });
         }
         catch(err) {
-            log.error(log_prefix + err);
+            log.error(err);
             callback([]);
         }
     }
