@@ -53,7 +53,7 @@ class Config {
     }
 
     error(err) {
-        log.error(log_prefix + err);
+        log.error(err);
     }
 }
 

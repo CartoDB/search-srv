@@ -34,6 +34,12 @@ class logging {
 
     error(msg) {
         this.write(ERROR, msg);
+        if ( msg instanceof Error) {
+            console.error("ERROR: stack = ", msg.stack);
+            this.write(ERROR, msg.stack);
+        } else {
+            this.write(ERROR, msg);
+        }
     }
 
     destructor() {
