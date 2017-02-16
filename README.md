@@ -2,11 +2,12 @@
 
 ### Overview
 A search aggregation service.
+![alt text](docs/search_overview.png "Search Overview")
 
 ### Installation
 Before executing the commands below, make sure you have node version 6.9.1 (or later) installed.
 ```
-git clone https://bbgithub.dev.bloomberg.com/datavis-cartodb/search-srv.git
+git clone https://github.com/cartodb/search-srv.git
 cd search-srv
 npm install
 npm start <port> <log_file> <settings.cfg>
