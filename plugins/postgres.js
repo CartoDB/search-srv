@@ -4,47 +4,7 @@ const pg = require('pg');
 const Plugin = require('./plugin');
 const log = require('../utils/logging');
 const log_prefix = 'Postgres Plugin:';
-
-const search_query = `\
-SELECT
-    id,
-    username,
-    type,
-    name,
-    description,
-    tags,
-    (1.0 / (CASE WHEN pos_name = 0 THEN 10000 ELSE pos_name END) + 1.0 / (CASE WHEN pos_tags = 0 THEN 10000 ELSE pos_tags END)) AS rank
-FROM (
-    SELECT
-        v.id,
-        u.username,
-        v.type,
-        v.name,
-        v.description,
-        v.tags,
-        COALESCE(position($1 in lower(v.name)), 0) AS pos_name,
-        COALESCE(position($1 in lower(array_to_string(v.tags, ' '))), 0) * 1000 AS pos_tags
-    FROM visualizations AS v
-        INNER JOIN users AS u on u.id = v.user_id
-        LEFT JOIN external_sources AS es ON es.visualization_id = v.id
-        LEFT JOIN external_data_imports AS edi ON (
-            edi.external_source_id = es.id AND
-            (SELECT state FROM data_imports WHERE id = edi.data_import_id) <> 'failure'
-        ) WHERE (
-            edi.id IS NULL AND
-            v.user_id = (SELECT id FROM users WHERE username=$2) AND
-            v.type in ('table', 'remote') AND (
-                to_tsvector(COALESCE(v.name, '')) @@ to_tsquery($3) OR
-                to_tsvector(array_to_string(v.tags, ' ')) @@ to_tsquery($3) OR
-                v.name ILIKE $4 OR
-                array_to_string(v.tags, ' ') ILIKE $4
-            )
-        )
-) AS results
-WHERE name <> 'shared_empty_dataset'
-ORDER BY rank DESC, type DESC LIMIT 50`;
-
-const search_query2 = `select * from search_return_table_records($1, $2, $3, $4)`;
+const search_query = `select * from search_return_table_records($1, $2, $3, $4)`;
 
 class Postgres extends Plugin {
     constructor(name, host, port, user, password, database) {
@@ -92,17 +52,10 @@ class Postgres extends Plugin {
                 text = text.toLowerCase();
                 var prefix_text = text.replace(new RegExp(' ', 'g'), '+') + ':*';
                 var like_text = '%' + text + '%';
-                var query_config1 = {
+                var query_config = {
                     text: search_query,
                     values: [text, username, prefix_text, like_text]
                 }
-
-                var query_config2 = {
-                    text: search_query2,
-                    values: [text, username, prefix_text, like_text]
-                }
-
-                let query_config = query_config2;
 
                 log.info("Running query=" +  JSON.stringify(query_config));
 
