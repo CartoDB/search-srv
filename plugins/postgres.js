@@ -44,6 +44,7 @@ FROM (
 WHERE name <> 'shared_empty_dataset'
 ORDER BY rank DESC, type DESC LIMIT 50`;
 
+const search_query2 = `select * from search_return_table_records($1, $2, $3, $4)`;
 
 class Postgres extends Plugin {
     constructor(name, host, port, user, password, database) {
@@ -91,10 +92,19 @@ class Postgres extends Plugin {
                 text = text.toLowerCase();
                 var prefix_text = text.replace(new RegExp(' ', 'g'), '+') + ':*';
                 var like_text = '%' + text + '%';
-                var query_config = {
+                var query_config1 = {
                     text: search_query,
                     values: [text, username, prefix_text, like_text]
                 }
+
+                var query_config2 = {
+                    text: search_query2,
+                    values: [text, username, prefix_text, like_text]
+                }
+
+                let query_config = query_config2;
+
+                log.info("Running query=" +  JSON.stringify(query_config));
 
                 client.query(query_config, function(err, result) {
                     if (err) {
@@ -104,10 +114,12 @@ class Postgres extends Plugin {
                     }
                     try {
                         client.end();
+                        console.log("Returned result.rows(", result.rows.length, ") from query=", result.rows);
+                        log.info("Returned result.rows(" +  result.rows.length + ") from query=" + JSON.stringify(result.rows));
                         callback(result.rows.map(self.format_suggestion));
                     }
                     catch(err) {
-                        log.error(log_prefix + err);
+                        log.error(err);
                         callback([]);
                     }
                 });
@@ -121,14 +133,14 @@ class Postgres extends Plugin {
 
     format_suggestion(suggestion) {
         var pl = {};
-        pl.score = suggestion['rank'];
-        pl.id = suggestion['id'];
-        pl.dataset = suggestion['name'];
+        pl.score = suggestion['rank1'];
+        pl.id = suggestion['id1'];
+        pl.dataset = suggestion['name1'];
         pl.is_dataset = true;
         pl.data = {
-            name: suggestion['name'],
-            description: suggestion['description'],
-            tags: suggestion['tags']
+            name: suggestion['name1'],
+            description: suggestion['description1'],
+            tags: suggestion['tags1']
         };
         return pl;
     }
