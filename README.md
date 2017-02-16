@@ -2,6 +2,7 @@
 
 ### Overview
 A search aggregation service.
+![alt text](docs/search_overview.pdf "Search Overview")
 
 ### Installation
 Before executing the commands below, make sure you have node version 6.9.1 (or later) installed.
