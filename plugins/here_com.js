@@ -5,6 +5,7 @@ const Plugin = require('./plugin');
 const requests = require('../utils/requests');
 const log = require('../utils/logging');
 const log_prefix = 'Elasticsearch Plugin:';
+const request = require('request');
 
 /************************************* */
 // parseUri 1.2.2
@@ -60,7 +61,7 @@ class HereCOM extends Plugin {
 
         var sUrlParams = '?in=' + additional_params.bounds + '&q=' + sText + 
                    '&app_id=' + this.app_id + '&app_code=' + this.app_code + '&tf=plain&pretty=true';
-        var request_struct;
+        var request_struct, request_struct2;
 
         var sFullDude = this.request_host_full + sUrlParams;
 
@@ -100,13 +101,40 @@ class HereCOM extends Plugin {
                 path: _parsedRequest.source,
                 agent: false  // create a new agent just for this one request
             };
+
+            request_struct2 = {
+                host: _parsedProxy.host,
+                port: sPort,
+                method: 'GET',
+                path: _parsedRequest.source
+            };
         }
 
 
         console.log("here.com request_struct=", request_struct);
+        console.log("here.com request_struct2=", request_struct2);
         var sRequestStruct = JSON.stringify(request_struct, null,2);
+        var sRequestStruct2 = JSON.stringify(request_struct2, null,2);
 
-        var req = http.get(request_struct, function(response) {
+        log.error("sRequestStruct2:" + sRequestStruct2);
+
+        request(_parsedRequest.source, function (error, response, body) {
+            console.log('error:', error); // Print the error if one occurred
+            console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+            console.log('body:', body); // Print the HTML for the Google homepage.
+        });
+
+        var req = http.request(request_struct2, function(response) {
+            if ( response && response.statusCode != 200 ) {
+                log.error("ERROR: Request error. Structure was:" + request_struct2);
+            }
+
+            console.log("here.com request_struct2 response=", response);
+            this.query_callback(response, callback);
+        }.bind(this));
+
+
+/*        var req = http.get(request_struct, function(response) {
             if ( response && response.statusCode != 200 ) {
                 log.error("ERROR: Request error. Structure was:" + sRequestStruct);
             }
@@ -114,7 +142,7 @@ class HereCOM extends Plugin {
             console.log("here.com response=", response);
             this.query_callback(response, callback);
         }.bind(this));
-
+*/
         req.on('error', function(err) {
             log.error(err);
             callback([]);
@@ -153,7 +181,7 @@ class HereCOM extends Plugin {
             });
             callback(payloads);
         }).catch(function(err) {
-            log.error(log_prefix + err);
+            log.error(err);
             callback([]);
         });
     }
