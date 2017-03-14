@@ -61,99 +61,16 @@ class HereCOM extends Plugin {
 
         var sUrlParams = '?in=' + additional_params.bounds + '&q=' + sText + 
                    '&app_id=' + this.app_id + '&app_code=' + this.app_code + '&tf=plain&pretty=true';
-        var request_struct, request_struct2;
 
-        var sFullDude = this.request_host_full + sUrlParams;
+        var sFullURL = this.request_host_full + sUrlParams;
 
-        var _parsedRequest = parseUri(sFullDude);
+        var _parsedRequest = parseUri(sFullURL);
 
-        console.log("here.com _parsedRequest=", _parsedRequest);
-
-        var sProxy = process.env.http_proxy;
-
-        if ( !sProxy ) {
-            request_struct = {
-                hostname: _parsedRequest.host,
-                port: _parsedRequest.protocol === 'https' ? 443 : 80,
-                path: _parsedRequest.relative,
-                agent: false  // create a new agent just for this one request
-            };
-        } else {
-            var _parsedProxy = parseUri(sProxy);
-            console.log("here.com _parsedProxy=", _parsedProxy);
-
-            var sPort;
-            
-            if ( _parsedProxy.port.length > 0 ) {
-                sPort = _parsedProxy.port;
-            } else if (_parsedProxy.protocol === 'http') {
-                sPort = 80;
-            } else if (_parsedProxy.protocol === 'https') {
-                sPort = 443;
-             } else {
-                throw new Error("ERROR: Bad proxy settins=" + sProxy);
-            }
-
-            request_struct = {
-                hostname: _parsedProxy.host,
-                //port: this.request_host.startsWith("https") ? 443 : 80,
-                port: sPort  ,
-                path: _parsedRequest.source,
-                agent: false  // create a new agent just for this one request
-            };
-
-            request_struct2 = {
-                host: _parsedProxy.host,
-                port: sPort,
-                method: 'GET',
-                path: _parsedRequest.source
-            };
-        }
-
-
-        console.log("here.com request_struct=", request_struct);
-        console.log("here.com request_struct2=", request_struct2);
-        var sRequestStruct = JSON.stringify(request_struct, null,2);
-        var sRequestStruct2 = JSON.stringify(request_struct2, null,2);
-
-        log.error("sRequestStruct2:" + sRequestStruct2);
+        console.log("here.com _parsedRequest=", _parsedRequest, "\n\n\n");
 
         request(_parsedRequest.source, function (error, response, body) {
-            console.log('error:', error); // Print the error if one occurred
-            console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
-            console.log('body:', body); // Print the HTML for the Google homepage.
-        });
-
-        var req = http.request(request_struct2, function(response) {
-            if ( response && response.statusCode != 200 ) {
-                log.error("ERROR: Request error. Structure was:" + request_struct2);
-            }
-
-            console.log("here.com request_struct2 response=", response);
-            this.query_callback(response, callback);
-        }.bind(this));
-
-
-/*        var req = http.get(request_struct, function(response) {
-            if ( response && response.statusCode != 200 ) {
-                log.error("ERROR: Request error. Structure was:" + sRequestStruct);
-            }
-
-            console.log("here.com response=", response);
-            this.query_callback(response, callback);
-        }.bind(this));
-*/
-        req.on('error', function(err) {
-            log.error(err);
-            callback([]);
-        });
-    }
-
-    query_callback(response, callback) {
-        if (response.statusCode != 200) {
             var cache = [];
-            log.warn('ERROR: Received statusCode:' + response.statusCode + ',  statusMessage:'+ response.statusMessage +
-               ' responseObj:' +  JSON.stringify(response, function(key, value) {
+            var sResponseBody = JSON.stringify(body, function(key, value) {
                     if (typeof value === 'object' && value !== null) {
                         if (cache.indexOf(value) !== -1) {
                             // Circular reference found, discard key
@@ -163,27 +80,115 @@ class HereCOM extends Plugin {
                         cache.push(value);
                     }
                     return value;
-            },2));
+            }, 2);
 
-            callback([]);
-            return;
-        }
-        requests.get_request_body(response).then(function(body) {
-            let suggestions = JSON.parse(body)['hits']['hits'];
-            let payloads = suggestions.map(function(suggestion) {
-                var pl = {};
-                pl.data = suggestion._source.data;
-                pl.id = suggestion._source.id;
-                pl.dataset = suggestion._source.dataset;
-                pl.is_dataset = false;
-                pl.score = suggestion._score;
-                return pl;
-            });
-            callback(payloads);
-        }).catch(function(err) {
-            log.error(err);
-            callback([]);
+            // Delete me ********
+            console.log('error:', error); // Print the error if one occurred
+            console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+            console.log('body:', body); // Print the HTML for the here geocode response
+            log.info("body=" + body);
+            // *******************
+
+            if (response.statusCode != 200) {
+                var cache = [];
+                log.error('ERROR: Received bad statusCode:' + response.statusCode + ',  statusMessage:'+ response.statusMessage +
+                          ' responseObj:' +  sResponseBody);
+                callback([]);
+            } else {
+                try {
+                    this.query_callback(JSON.parse(body), callback);
+                } catch (err) {
+                    log.error("ERROR: There was an error parsing body:\n" + body);
+                    log.error(err);
+                }
+            }
+        }.bind(this));
+
+    }
+
+    query_callback(oBody, callback) {
+        // This method will create an array of https://schema.org/Place
+        var oResult = {
+            "@context": "http://schema.org",
+            places: []
+        };
+
+        var nLength = oBody.results.items.length;
+
+        console.log("Received nLength=" + nLength + " items");
+
+        oBody.results.items.forEach(function(oValue){
+            console.log(oValue);
+
+            // https://developer.here.com/rest-apis/documentation/places/topics_api/media-type-place.html
+            if ( oValue.category.type === "urn:nlp-types:category" )  {
+                let oNewPlace = {
+                    "@type": "Place",  // https://schema.org/Place
+                    "name": oValue.title,
+                    "address" : {
+                        "@type": "PostalAddress",  // https://schema.org/address
+                        "addressLocality": oValue.vicinity
+                    },
+                    additionalProperty: []
+                 };
+
+                 oNewPlace.additionalProperty.push ( {
+                         "@type": "PropertyValue",  // https://schema.org/PropertyValue
+                         "name" : "href",
+                         "url" : oValue.href
+                 });
+
+                oNewPlace.additionalProperty.push ( {
+                         "@type": "PropertyValue",  // https://schema.org/PropertyValue
+                         "name" : "propertyID",
+                         "value" : oValue.id
+                });
+
+                if ( oValue.icon ) {
+                     oNewPlace.additionalProperty.push ( {
+                         "@type": "PropertyValue",  // https://schema.org/PropertyValue
+                         "name" : "icon",
+                         "image" : oValue.icon
+                     });
+                }
+
+                if ( oValue.category ) {
+                    // https://developer.here.com/rest-apis/documentation/places/topics_api/media-type-category.html
+                     oNewPlace.additionalProperty.push ({
+                         "@type": "PropertyValue",  // https://schema.org/PropertyValue
+                         "name" : "category",
+                         "description" : oValue.category.title,
+                         "value": oValue.category.id,
+                         "url" : oValue.category.href
+                     });
+                }
+
+                if ( oValue.distance ) {
+                     oNewPlace.additionalProperty.push ( {
+                         "@type": "PropertyValue",  // https://schema.org/PropertyValue
+                         "name" : "distance",
+                         "value" : oValue.distance
+                     });
+                }
+
+                // https://schema.org/GeoCoordinates
+                let oGeoCordinates = {
+                    "@type": "GeoCoordinates",
+                    "latitude" : oValue.position[0],
+                    "longitude" : oValue.position[1]
+                };
+                oNewPlace.geo = oGeoCordinates;
+
+                oResult.places.push(oNewPlace);
+            } else {
+                log.warn("Unknown category.type" + JSON.stringify(oValue, null, 2));
+                console.error( "Unknown category.type" + JSON.stringify(oValue, null, 2) );
+            }
         });
+
+        console.log("Returning oResult=" + JSON.stringify(oResult, null, 2) );
+
+        callback(oResult);
     }
 }
 
