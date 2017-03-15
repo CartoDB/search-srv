@@ -131,12 +131,7 @@ class HereCOM extends Plugin {
                         "@type": "PostalAddress",  // https://schema.org/address
                         "addressLocality": oValue.vicinity
                     },
-                    additionalProperty: [{
-                                            "@type": "PropertyValue",  // https://schema.org/PropertyValue
-                                            "name" : "provider",
-                                            "value" : "here:placessearch",
-                                            "url": _that.request_host_full
-                                         }]
+                    additionalProperty: []
                  };
 
                  oNewPlace.additionalProperty.push ( {
