@@ -145,11 +145,8 @@ class HereCOM extends Plugin {
                 });
 
                 if ( oValue.icon ) {
-                     oNewPlace.additionalProperty.push ( {
-                         "@type": "PropertyValue",  // https://schema.org/PropertyValue
-                         "name" : "icon",
-                         "image" : oValue.icon
-                     });
+                    // This is the HERE category icon
+                     oNewPlace.image = oValue.icon
                 }
 
                 if ( oValue.category ) {
