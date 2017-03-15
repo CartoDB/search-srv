@@ -117,6 +117,8 @@ class HereCOM extends Plugin {
 
         console.log("Received nLength=" + nLength + " items");
 
+        var _that = this;
+
         oBody.results.items.forEach(function(oValue){
             console.log(oValue);
 
@@ -129,7 +131,12 @@ class HereCOM extends Plugin {
                         "@type": "PostalAddress",  // https://schema.org/address
                         "addressLocality": oValue.vicinity
                     },
-                    additionalProperty: []
+                    additionalProperty: [{
+                                            "@type": "PropertyValue",  // https://schema.org/PropertyValue
+                                            "name" : "provider",
+                                            "value" : "here:placessearch",
+                                            "url": _that.request_host_full
+                                         }]
                  };
 
                  oNewPlace.additionalProperty.push ( {
