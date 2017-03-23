@@ -1,5 +1,9 @@
 "use strict";
 
+/* Makes calls to 
+ * https://developer.here.com/rest-apis/documentation/places/topics_api/resource-autosuggest.html
+ */
+
 const http = require('http');
 const Plugin = require('./plugin');
 const requests = require('../utils/requests');
@@ -52,7 +56,7 @@ class HereCOMSuggestions extends Plugin {
     query(sText, callback, additional_params) {
         console.log("here.com query text=", sText, "additional_params=", additional_params);
         if ( ! (additional_params.bounds || additional_params.center ) ) {
-            console.error("ERROR: HERE location search requires boundary boxes or a center point!");
+            console.error("ERROR: here_suggestions search requires boundary boxes or a center point!");
             return;
         }
 
@@ -97,7 +101,18 @@ class HereCOMSuggestions extends Plugin {
                 var cache = [];
                 log.error('ERROR: Received bad statusCode:' + response.statusCode + ',  statusMessage:'+ response.statusMessage +
                           ' responseObj:' +  sResponseBody);
-                callback([]);
+
+                var oResult = {
+                  "@context": "http://schema.org",
+                  places: [{
+                      "@type": "error",  // https://schema.org/error
+                      "name": response.statusCode,
+                      "description": sResponseBody
+                    }
+                  ]
+                };
+
+                callback(oResult);
             } else {
                 try {
                     this.query_callback(JSON.parse(body), callback);

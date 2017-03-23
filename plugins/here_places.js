@@ -99,9 +99,19 @@ class HereCOM extends Plugin {
 
             if (response.statusCode != 200) {
                 var cache = [];
-                log.error('ERROR: here_places received bad statusCode:' + response.statusCode + ',  statusMessage:'+ response.statusMessage +
+                log.error('ERROR: here_places received bad statusCode:' + response.statusCode + ',  statusMessage:'+ 
                           ' responseObj:' +  sResponseBody);
-                callback([]);
+
+                var oResult = {
+                  "@context": "http://schema.org",
+                  places: [{
+                      "@type": "error",  // https://schema.org/Place
+                      "name": response.statusCode,
+                      "description": sResponseBody
+                    }
+                  ]
+                };
+                callback(oResult);
             } else {
                 try {
                     this.query_callback(JSON.parse(body), callback);
