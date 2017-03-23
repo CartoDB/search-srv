@@ -1,5 +1,9 @@
 "use strict";
 
+/* Makes calls to 
+ * https://developer.here.com/rest-apis/documentation/places/topics_api/resource-search.html
+ */
+
 const http = require('http');
 const Plugin = require('./plugin');
 const requests = require('../utils/requests');
@@ -51,13 +55,20 @@ class HereCOM extends Plugin {
 
     query(sText, callback, additional_params) {
         console.log("here_laces query text=", sText, "additional_params=", additional_params);
-        if ( ! additional_params.bounds ) {
-            console.error("ERROR: here_places location search requires boundary boxes!");
+        if ( ! (additional_params.bounds || additional_params.center ) ) {
+            console.error("ERROR: here_places search requires boundary boxes or a center point!");
             return;
         }
 
-        var sUrlParams = '?in=' + additional_params.bounds + '&q=' + sText + 
+        var sUrlParams;
+
+        if ( additional_params.bounds ) {
+            sUrlParams = '?in=' + additional_params.bounds + '&q=' + sText + 
                    '&app_id=' + this.app_id + '&app_code=' + this.app_code + '&tf=plain&pretty=true';
+        } else {
+            sUrlParams = '?at=' + additional_params.center + '&q=' + sText + 
+                   '&app_id=' + this.app_id + '&app_code=' + this.app_code + '&tf=plain&pretty=true';
+        }
 
         var sFullURL = this.request_host_full + sUrlParams;
 

@@ -51,13 +51,20 @@ class HereCOMSuggestions extends Plugin {
 
     query(sText, callback, additional_params) {
         console.log("here.com query text=", sText, "additional_params=", additional_params);
-        if ( ! additional_params.bounds ) {
-            console.error("ERROR: HERE location search requires boundary boxes!");
+        if ( ! (additional_params.bounds || additional_params.center ) ) {
+            console.error("ERROR: HERE location search requires boundary boxes or a center point!");
             return;
         }
 
-        var sUrlParams = '?in=' + additional_params.bounds + '&q=' + sText + 
+        var sUrlParams;
+
+        if ( additional_params.bounds ) {
+            sUrlParams = '?in=' + additional_params.bounds + '&q=' + sText + 
                    '&app_id=' + this.app_id + '&app_code=' + this.app_code + '&tf=plain&pretty=true';
+        } else {
+            sUrlParams = '?at=' + additional_params.center + '&q=' + sText + 
+                   '&app_id=' + this.app_id + '&app_code=' + this.app_code + '&tf=plain&pretty=true';
+        }
 
         var sFullURL = this.request_host_full + sUrlParams;
 
