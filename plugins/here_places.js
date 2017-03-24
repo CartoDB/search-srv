@@ -55,7 +55,7 @@ class HereCOM extends Plugin {
 
     query(sText, callback, additional_params) {
         console.log("here_laces query text=", sText, "additional_params=", additional_params);
-        if ( ! (additional_params.bounds || additional_params.center ) ) {
+        if ( ! (additional_params && (additional_params.bounds || additional_params.center) ) ) {
             console.error("ERROR: here_places search requires boundary boxes or a center point!");
             return;
         }
