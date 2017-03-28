@@ -57,6 +57,17 @@ class HereCOMSuggestions extends Plugin {
         console.log("here.com query text=", sText, "additional_params=", additional_params);
         if ( ! (additional_params && (additional_params.bounds || additional_params.center) ) ) {
             console.error("ERROR: here_suggestions search requires boundary boxes or a center point!");
+
+            let oResult = {
+                "@context": "http://schema.org",
+                places: [{
+                    "@type": "error",  // https://schema.org/error
+                    "name": 404,
+                    "description": (new Error("ERROR: here_suggestions search requires boundary boxes or a center point!")).stack
+                }]
+            };
+
+            callback(oResult);
             return;
         }
 

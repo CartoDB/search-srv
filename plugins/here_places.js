@@ -57,6 +57,16 @@ class HereCOM extends Plugin {
         console.log("here_laces query text=", sText, "additional_params=", additional_params);
         if ( ! (additional_params && (additional_params.bounds || additional_params.center) ) ) {
             console.error("ERROR: here_places search requires boundary boxes or a center point!");
+            let oResult = {
+                "@context": "http://schema.org",
+                places: [{
+                    "@type": "error",  // https://schema.org/error
+                    "name": 404,
+                    "description": "ERROR: here_places search requires boundary boxes or a center point!" +  (new Error()).stack.split('\n').slice(1,2)
+
+                }]
+            };
+            callback(oResult);
             return;
         }
 
